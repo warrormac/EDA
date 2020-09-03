@@ -1,24 +1,20 @@
 // Course of Dimensionality.cpp : Defines the entry point for the application.
 //
 
-#include "Course of Dimensionality.h"
 #include <iostream>
+#include "Course of Dimensionality.h"
+#include <cmath>
 #include <vector>
 #include <time.h>
+#include <chrono>
 
 using namespace std;
+using namespace std::chrono;
 
 
-int Mat(vector<vector<int>> vec, int row, int col)
+int Mat(vector<vector<int>> &vec, int row, int col)
 {
-    
-
-    cout << "insert numer of rows: ";
-    cin >> row;
-    cout << "insert number od col: ";
-    cin >> col; 
-
-
+  
 
     srand(time(NULL));
     // Elements to insert in column 
@@ -39,23 +35,71 @@ int Mat(vector<vector<int>> vec, int row, int col)
         vec.push_back(v1);
     }
 
-    /* Displaying the 2D vector 
-    for (int i = 0; i < vec.size(); i++) {
-        for (int j = 0; j < vec[i].size(); j++)
-            cout << vec[i][j] << " ";
-        cout << endl;
-    }*/
     return 0;
     
 }
 
+int distancia(vector<int> vect1, vector<int> vect2)
+{
+    int suma = 0;
+    for (size_t i = 0; i < vect1.size(); i++)
+        suma += pow(vect1[i] - vect2[i], 2);
+    return sqrt(suma);
+}
+void ecli(vector<vector<int>>& vect1, vector<vector<int>>& vect2, int col)
+{
+    for (size_t i = 0; i < col; i++)
+    {
+        for (size_t j = i + 1; j < col; j++)
+        {
+            distancia(vect1[i], vect2[j]);
+        }
+    }
+}
 
 
 int main() {
+   
+    
+    vector<vector<int>> vect1;
+    vector<vector<int>> vect2;
+
 
     int row=0, col=0;
-    vector<vector<int>> vect;
-    Mat(vect,row,col);
+    cout << "insert numer of rows: ";
+    cin >> row;
+    cout << "insert number of col: ";
+    cin >> col;
+    
+    Mat(vect1,row,col);
+    Mat(vect2, row, col);
+
+   
+    auto begin = chrono::high_resolution_clock::now();
+    ecli(vect1, vect2, col);
+   
+    auto end = chrono::high_resolution_clock::now();
+    auto dur = end - begin;
+    auto ms = std::chrono::duration_cast<std::chrono::microseconds>(dur).count();
+    cout << ms<<"ms" << endl;
+    
+   /* for (int i = 0; i < vect1.size(); i++) {
+        for (int j = 0; j < vect1[i].size(); j++)
+            cout << vect1[i][j] << " ";
+        cout << endl;
+    }
+
+    cout << "\n";
+    cout << "\n";
+    cout << "\n";
+
+    for (int i = 0; i < vect2.size(); i++) {
+        for (int j = 0; j < vect2[i].size(); j++)
+            cout << vect2[i][j] << " ";
+        cout << endl;
+    }
+    */
+
 
 }
 
