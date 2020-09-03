@@ -39,7 +39,7 @@ int Mat(vector<vector<int>> &vec, int row, int col)
     
 }
 
-int distancia(vector<int> vect1, vector<int> vect2)
+int distance(vector<int> vect1, vector<int> vect2)
 {
     int suma = 0;
     for (size_t i = 0; i < vect1.size(); i++)
@@ -52,7 +52,7 @@ void ecli(vector<vector<int>>& vect1, vector<vector<int>>& vect2, int col)
     {
         for (size_t j = i + 1; j < col; j++)
         {
-            distancia(vect1[i], vect2[j]);
+            distance(vect1[i], vect2[j]);
         }
     }
 }
@@ -82,7 +82,7 @@ int main() {
     auto dur = end - begin;
     auto ms = std::chrono::duration_cast<std::chrono::microseconds>(dur).count();
     cout << ms<<"ms" << endl;
-    
+  
    /* for (int i = 0; i < vect1.size(); i++) {
         for (int j = 0; j < vect1[i].size(); j++)
             cout << vect1[i][j] << " ";
