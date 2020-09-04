@@ -18,7 +18,7 @@ int Mat(vector<vector<int>> &vec, int row, int col)
 
     srand(time(NULL));
     // Elements to insert in column 
-    int num = 1 + rand() % (10000 - 1);
+    int num = 1 + rand() % (20000 - 1);
 
     // Inserting elements into vector 
     for (int i = 0; i < row; i++) {
@@ -39,20 +39,19 @@ int Mat(vector<vector<int>> &vec, int row, int col)
     
 }
 
-int distance(vector<int> vect1, vector<int> vect2)
+
+
+
+void ecli(vector<vector<int>>& vect1,  int row, int col)
 {
     int suma = 0;
-    for (size_t i = 0; i < vect1.size(); i++)
-        suma += pow(vect1[i] - vect2[i], 2);
-    return sqrt(suma);
-}
-void ecli(vector<vector<int>>& vect1, vector<vector<int>>& vect2, int col)
-{
-    for (size_t i = 0; i < col; i++)
+    for (size_t i = 0; i < row; i++)
     {
-        for (size_t j = i + 1; j < col; j++)
+        for (size_t j = i + 1; j < row; j++)
         {
-            distance(vect1[i], vect2[j]);
+            for (size_t k = 0; k < col; k++)
+                suma += pow(vect1[i][k] - vect1[j][k], 2);
+            
         }
     }
 }
@@ -62,42 +61,49 @@ int main() {
    
     
     vector<vector<int>> vect1;
-    vector<vector<int>> vect2;
+    int a = 1;
+    while (a == 1)
+    {
+        int row = 0, col = 0;
+        cout << "insert numer of rows: ";
+        cin >> row;
+        cout << "insert number of col: ";
+        cin >> col;
+
+        
+        Mat(vect1, row, col);
+
+        
 
 
-    int row=0, col=0;
-    cout << "insert numer of rows: ";
-    cin >> row;
-    cout << "insert number of col: ";
-    cin >> col;
+
+        auto begin = chrono::high_resolution_clock::now();
+
+        ecli(vect1,  row, col);
+
+        auto end = chrono::high_resolution_clock::now();
+        auto dur = end - begin;
+        auto ms = std::chrono::duration_cast<std::chrono::microseconds>(dur).count();
+        cout << ms << "ms" << endl;
+        cin >> a;
+    }
     
-    Mat(vect1,row,col);
-    Mat(vect2, row, col);
+   /* 
+   for (int i = 0; i < vect1.size(); i++) {
+            for (int j = 0; j < vect1[i].size(); j++)
+                cout << vect1[i][j] << " ";
+            cout << endl;
+        }
 
-   
-    auto begin = chrono::high_resolution_clock::now();
-    ecli(vect1, vect2, col);
-   
-    auto end = chrono::high_resolution_clock::now();
-    auto dur = end - begin;
-    auto ms = std::chrono::duration_cast<std::chrono::microseconds>(dur).count();
-    cout << ms<<"ms" << endl;
-  
-   /* for (int i = 0; i < vect1.size(); i++) {
-        for (int j = 0; j < vect1[i].size(); j++)
-            cout << vect1[i][j] << " ";
-        cout << endl;
-    }
+        cout << "\n";
+        cout << "\n";
+        cout << "\n";
 
-    cout << "\n";
-    cout << "\n";
-    cout << "\n";
-
-    for (int i = 0; i < vect2.size(); i++) {
-        for (int j = 0; j < vect2[i].size(); j++)
-            cout << vect2[i][j] << " ";
-        cout << endl;
-    }
+        for (int i = 0; i < vect2.size(); i++) {
+            for (int j = 0; j < vect2[i].size(); j++)
+                cout << vect2[i][j] << " ";
+            cout << endl;
+        }
     */
 
 
