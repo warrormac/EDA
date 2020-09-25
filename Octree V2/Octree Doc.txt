@@ -1,0 +1,9 @@
+Octree Doc
+
+Este octree fue modifique y mejorado. No es completamente mío.
+Al octree se le agrego lo que se pidió, que era:
+	* ingresar los puntos
+	* eliminar los puntos
+
+Además, que se optimizo ya que la versión original tenía muchas cosas
+repetidas e ineficientes.
