@@ -1,4 +1,3 @@
-﻿// Implemetation of Octree in c++ 
 #include <iostream> 
 #include <vector> 
 #include <sstream>
@@ -6,16 +5,16 @@
 #include "string"
 using namespace std;
 
-#define TopLeftFront 0 
-#define TopRightFront 1 
-#define BottomRightFront 2 
-#define BottomLeftFront 3 
-#define TopLeftBottom 4 
-#define TopRightBottom 5 
-#define BottomRightBack 6 
-#define BottomLeftBack 7 
+#define TLF 0 
+#define TRF 1 
+#define BRF 2 
+#define BLF 3 
+#define TLB 4 
+#define TRB 5 
+#define BRB 6 
+#define BLB 7 
 
-// Structure of a point 
+
 struct Point {
     int x;
     int y;
@@ -27,7 +26,7 @@ struct Point {
         : x(a), y(b), z(c) {}
 };
 
-// Octree class 
+template <typename T >
 class Octree {
 
     // if point == NULL, node is internal node. 
@@ -47,36 +46,52 @@ public:
     }
 
     // Constructor with three arguments 
-    Octree(float x, float y, float z)
+    Octree(T x, T y, T z)
     {
         // To declare point node 
         point = new Point(x, y, z);
     }
 
     // Constructor with six arguments 
-    Octree(float x1, float y1, float z1, float x2, float y2, float z2)
+    Octree(T x1, T y1, T z1, T x2, T y2, T z2)
     {
         // This use to construct Octree 
         // with boundaries defined 
-        if (x2 < x1
-            || y2 < y1
-            || z2 < z1) {
-            cout << "bounday poitns are not valid" << endl;
+        if (x2 < x1 || y2 < y1 || z2 < z1) {
+            cout << "point not valid" << endl;
             return;
         }
 
         point = nullptr;
-        topLeftFront
-            = new Point(x1, y1, z1);
-        bottomRightBack
-            = new Point(x2, y2, z2);
+        topLeftFront = new Point(x1, y1, z1);
+        bottomRightBack = new Point(x2, y2, z2);
 
         // Assigning null to the children 
         children.assign(8, nullptr);
-        for (int i = TopLeftFront;
-            i <= BottomLeftBack;
-            ++i)
+        for (int i = TLF; i <= BLB; ++i)
             children[i] = new Octree();
+    }
+    
+    void oct(int *pos, int *midx, int *midy, int *midz, int x, int y, int z)
+    {
+        *midx = (topLeftFront->x + bottomRightBack->x) / 2;
+        *midy = (topLeftFront->y + bottomRightBack->y) / 2;
+        *midz = (topLeftFront->z + bottomRightBack->z) / 2;
+
+        if (x <= *midx) {
+            if (y <= *midy)
+                (z <= *midz) ? *pos = TLF : *pos = TLB;
+
+            else
+                (z <= *midz) ? *pos = BLF : *pos = BLB;
+        }
+        else {
+            if (y <= *midy)
+                (z <= *midz) ? *pos = TRF : *pos = TLB;
+            else
+                (z <= *midz) ? *pos = BRF : *pos = BRB;
+        }
+
     }
 
     // Function to insert a point in the octree 
@@ -85,7 +100,7 @@ public:
 
         // If the point already exists in the octree 
         if (find(x, y, z)) {
-            cout << "Point already exist in the tree" << endl;
+            cout << "Point already exists" << endl;
             return;
         }
 
@@ -93,32 +108,16 @@ public:
         if (x < topLeftFront->x || x > bottomRightBack->x
             || y < topLeftFront->y || y > bottomRightBack->y
             || z < topLeftFront->z || z > bottomRightBack->z)
-        {
             return;
-        }
 
         // Binary search to insert the point 
-        int midx = (topLeftFront->x + bottomRightBack->x) / 2;
-        int midy = (topLeftFront->y + bottomRightBack->y) / 2;
-        int midz = (topLeftFront->z + bottomRightBack->z) / 2;
+        int midx, midy, midz;
 
         int pos = -1;
-
+        
         // Checking the octant of 
         // the point 
-        if (x <= midx) {
-            if (y <= midy)
-                (z <= midz) ? pos = TopLeftFront : pos = TopLeftBottom;
-
-            else
-                (z <= midz) ? pos = BottomLeftFront : pos = BottomLeftBack;
-        }
-        else {
-            if (y <= midy)
-                (z <= midz) ? pos = TopRightFront : pos = TopRightBottom;
-            else
-                (z <= midz) ? pos = BottomRightFront : pos = BottomRightBack;
-        }
+        oct(&pos, &midx, &midy, &midz, x, y, z);
 
         // If an internal node is encountered 
         if (children[pos]->point == nullptr) {
@@ -126,7 +125,7 @@ public:
             return;
         }
 
-        // If an empty node is encountered 
+        // If an empty node is encountered     //////////////de esto hago el delete
         else if (children[pos]->point->x == -1) {
             delete children[pos];
             children[pos] = new Octree(x, y, z);
@@ -138,39 +137,39 @@ public:
                 z_ = children[pos]->point->z;
             delete children[pos];
             children[pos] = nullptr;
-            if (pos == TopLeftFront) {
+            if (pos == TLF) {
                 children[pos] = new Octree(topLeftFront->x,
                     topLeftFront->y, topLeftFront->z, midx, midy, midz);
             }
 
-            else if (pos == TopRightFront) {
+            else if (pos == TRF) {
                 children[pos] = new Octree(midx + 1,
                     topLeftFront->y, topLeftFront->z, bottomRightBack->x,
                     midy, midz);
             }
-            else if (pos == BottomRightFront) {
+            else if (pos == BRF) {
                 children[pos] = new Octree(midx + 1,
                     midy + 1, topLeftFront->z, bottomRightBack->x,
                     bottomRightBack->y, midz);
             }
-            else if (pos == BottomLeftFront) {
+            else if (pos == BLF) {
                 children[pos] = new Octree(topLeftFront->x,
                     midy + 1, topLeftFront->z, midx, bottomRightBack->y, midz);
             }
-            else if (pos == TopLeftBottom) {
+            else if (pos == TLB) {
                 children[pos] = new Octree(topLeftFront->x,
                     topLeftFront->y, midz + 1, midx, midy, bottomRightBack->z);
             }
-            else if (pos == TopRightBottom) {
+            else if (pos == TLB) {
                 children[pos] = new Octree(midx + 1,
                     topLeftFront->y, midz + 1, bottomRightBack->x, midy,
                     bottomRightBack->z);
             }
-            else if (pos == BottomRightBack) {
+            else if (pos == BRB) {
                 children[pos] = new Octree(midx + 1, midy + 1, midz + 1,
                     bottomRightBack->x, bottomRightBack->y, bottomRightBack->z);
             }
-            else if (pos == BottomLeftBack) {
+            else if (pos == BLB) {
                 children[pos] = new Octree(topLeftFront->x,
                     midy + 1, midz + 1, midx,
                     bottomRightBack->y, bottomRightBack->z);
@@ -185,40 +184,20 @@ public:
     bool find(int x, int y, int z)
     {
         // If point is out of bound 
-        if (x < topLeftFront->x
-            || x > bottomRightBack->x
-            || y < topLeftFront->y
-            || y > bottomRightBack->y
-            || z < topLeftFront->z
-            || z > bottomRightBack->z)
+        if (x < topLeftFront->x || x > bottomRightBack->x
+            || y < topLeftFront->y || y > bottomRightBack->y
+            || z < topLeftFront->z || z > bottomRightBack->z)
             return 0;
 
         // Otherwise perform binary search 
         // for each ordinate 
-        int midx = (topLeftFront->x + bottomRightBack->x) / 2;
-        int midy = (topLeftFront->y + bottomRightBack->y) / 2;
-        int midz = (topLeftFront->z + bottomRightBack->z) / 2;
+        int midx, midy, midz;
 
         int pos = -1;
 
         // Deciding the position 
         // where to move 
-        if (x <= midx) {
-            if (y <= midy) {
-                (z <= midz) ? pos = TopLeftFront : pos = TopLeftBottom;
-            }
-            else {
-                (z <= midz) ? pos = BottomLeftFront : pos = BottomLeftBack;
-            }
-        }
-        else {
-            if (y <= midy) {
-                (z <= midz) ? pos = TopRightFront : pos = TopRightBottom;
-            }
-            else {
-                (z <= midz) ? pos = BottomRightFront : pos = BottomRightBack;
-            }
-        }
+        oct(&pos, &midx, &midy, &midz, x, y, z);
 
         // If an internal node is encountered 
         if (children[pos]->point == nullptr) {
@@ -239,22 +218,32 @@ public:
         }
         return 0;
     }
+
+    void del(int x, int y, int z)
+    {
+        int midx, midy, midz;
+        int pos = -1;
+        oct(&pos, &midx, &midy, &midz, x, y, z);
+
+        if (children[pos]->point == NULL) 
+            return children[pos]->del(x, y, z);
+        
+        else {
+            delete children[pos];
+            children[pos] = new Octree();
+            return;
+        }
+
+    }
+  
 };
-
-
-
 
 // Driver code 
 int main()
 {
-    Octree tree(-999, -999, -999, 999, 999, 999);
+    Octree<float> tree(-999, -999, -999, 999, 999, 999);
 
     int i = 0;
-    float p, q, r;
-    float* ptr = &p;
-    float* ptr2 = &q;
-    float* ptr3 = &r;
-
     string myText;
     vector <float> v;
     ifstream MyReadFile("puntos.txt");
@@ -267,21 +256,18 @@ int main()
             v.push_back(n);
     }
 
-    while (i < 84)
+    while (i < v.size())
     {
         //cout << v[i] << "\n" << v[i+1] << "\n" << v[i+2] << "\n";
         tree.insert(v[i], v[i + 1], v[i + 2]);
         i += 3;
-
     }
-
-
     //tree.insert(-55.081, 152.48, 10.6415);
-
-   //cout << (tree.find(-55.081, 152.48, 10.6415) ? "Found\n" : "Not Found\n");
+    //cout << (tree.find(-55.081, 152.48, 10.6415) ? "1\n" : "0\n");
+    //tree.del(-55.081, 152.48, 10.6415);
+    //cout << (tree.find(-55.081, 152.48, 10.6415) ? "1\n" : "0\n");
 
 
     MyReadFile.close();
-
     return 0;
 }
