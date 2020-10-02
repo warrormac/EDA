@@ -1,0 +1,6 @@
+Octree Doc con Visualizador
+
+Este octree fue modificado y mejorado. No es completamente mío.
+
+Además, que se optimizo ya que la versión original tenía muchas cosas
+repetidas e ineficientes.
