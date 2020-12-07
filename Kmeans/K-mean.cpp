@@ -28,11 +28,11 @@ public:
         cID = 0; //Initially not assigned to any cluster
     }
 
-    int getdim() {return dim;}
-    int getCluster() {return cID;}
-    int getID() {return pID;}
-    void setCluster(int val) {cID = val;}
-    double getVal(int pos) {return v[pos];}
+    int getdim() { return dim; }
+    int getCluster() { return cID; }
+    int getID() { return pID; }
+    void setCluster(int val) { cID = val; }
+    double getVal(int pos) { return v[pos]; }
 };
 
 
@@ -56,7 +56,7 @@ public:
         p.setCluster(this->cID);
         points.push_back(p);
     }
-    
+
     bool borrar(int size, int pID)
     {
         for (int i = 0; i < size; i++)
@@ -73,14 +73,14 @@ public:
     bool removePoint(int pID) {
         int size = points.size();
         return borrar(size, pID);
-        
+
     }
 
-    int getId() {return cID;}
-    Point getPoint(int pos) {return points[pos];}
-    int getSize() {return points.size();}
-    double getcenByPos(int pos) {return cen[pos];}
-    void setcenByPos(int pos, double val) {this->cen[pos] = val;}
+    int getId() { return cID; }
+    Point getPoint(int pos) { return points[pos]; }
+    int getSize() { return points.size(); }
+    double getcenByPos(int pos) { return cen[pos]; }
+    void setcenByPos(int pos, double val) { this->cen[pos] = val; }
 };
 
 class Kmeans {
@@ -89,7 +89,7 @@ private:
     vector<Cluster> clusters;
 
 
-    void cal(double sum, double min_dist, Point p, int *ptr)
+    void cal(double sum, double min_dist, Point p, int* ptr)
     {
         for (int i = 1; i < K; i++)
         {
@@ -117,8 +117,8 @@ private:
 
         min_dist = sqrt(sum);
         NearestcID = clusters[0].getId();
-        cal( sum, min_dist, point , &NearestcID);
-        
+        cal(sum, min_dist, point, &NearestcID);
+
 
         return NearestcID;
     }
@@ -132,7 +132,7 @@ public:
 
     void run(vector<Point>& all_points) {
 
-  
+
         tp = all_points.size();
         dim = all_points[0].getdim();
         int count = 0;
@@ -163,7 +163,6 @@ public:
         int iter = 1;
         while (true)
         {
-            cout << "Iter - " << iter << "/" << iters << endl;
             bool done = true;
             count = 0;
             while (count < tp)
@@ -175,21 +174,21 @@ public:
                 {
                     if (currentcID != 0) {
                         for (int j = 0; j < K; j++) {
-                            if (clusters[j].getId() == currentcID) 
+                            if (clusters[j].getId() == currentcID)
                                 clusters[j].removePoint(all_points[count].getID());
                         }
                     }
 
                     for (int j = 0; j < K; j++) {
-                        if (clusters[j].getId() == nearestcID) 
-                            clusters[j].addPoint(all_points[count]);  
+                        if (clusters[j].getId() == nearestcID)
+                            clusters[j].addPoint(all_points[count]);
                     }
                     all_points[count].setCluster(nearestcID);
                     done = false;
                 }
                 count++;
             }
-            
+
             count = 0;
             while (count < K)
             {
@@ -207,11 +206,11 @@ public:
                 }
                 count++;
             }
-            
+
 
             if (done || iter >= iters)
             {
-                cout << "Clustering completed in iteration : " << iter << endl << endl;
+                cout << "Total de iteraciones : " << iter << endl << endl;
                 break;
             }
             iter++;
@@ -250,7 +249,7 @@ bool verify(string name)
 
 int main()
 {
-    int K = 2;
+    int K = 4;
     bool temp = 0;
     int it = 100;
     string filename = "prueba 1.txt";
@@ -280,7 +279,7 @@ int main()
             return 1;
         }
 
-       
+
         Kmeans kmean(K, it);
         kmean.run(all_punto);
     }
